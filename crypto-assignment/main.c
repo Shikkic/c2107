@@ -17,19 +17,19 @@ int array_len(char **);
 void shiftArray(char **, int );
 int compareArray(string[], string[]);
 
-int main(int r, char **argv) {
+int main(int argc, char *argv[]) {
     char *ef, *ef2;
     char *dic;
     //READFILE
-    if(((ef = readFile("jaws_encr.txt"))==NULL)) {
+    if(((ef = readFile(argv[1]))==NULL)) {
+        printf("READ-FAILED: %s",argv[1]);
+        return 1;
+    }
+    if(((ef2 = readFile(argv[1]))==NULL)) {
         printf("READ-FAILED");
         return 1;
     }
-    if(((ef2 = readFile("jaws_encr.txt"))==NULL)) {
-        printf("READ-FAILED");
-        return 1;
-    }
-    if(((dic = readFile("words.txt"))==NULL)) {
+    if(((dic = readFile(argv[2]))==NULL)) {
         printf("READ-FAILED");
         return 1;
     }
@@ -37,36 +37,10 @@ int main(int r, char **argv) {
     //CHOP & LEN DECLARATIONS
     char **ec = chop(ef, ' ');
     char **dicChop = chop(dic, '\n');
-    int dicLen = array_len(dicChop);
-    int ecLen = array_len(ec);
+    //int dicLen = array_len(dicChop);
+    //int ecLen = array_len(ec);
 
-    shiftArray(ec, 21);
-    int i;
-    for(i = 0; i < ecLen; i++){
-        printf("Printing file %s\n", ec[i]);
-    }
-
-    //shiftArray(dicChop, 3);
-    // int z;
-    //for(z = 0; z < dicLen; z++) {
-      //  printf("Printing file %s\n", dicChop[z]);
-    //}
-        /*
-    int i = 0, z = 0, count;
-    char results[27];
-
-    for(i = 0; i < ecLen; i++) {
-
-    }
-*/
-/*
-    char *a[] = {"dog","doge","butt",'\0'};
-    char *b[] = {"dog","doge","butt",'\0'};
-    int rap = compareArray(a, b);
-    printf("rap IS = %d ", rap);
-    */
-
-     i = 0;
+    int i = 0;
     int results[27];
     while(i <= 26) {
         shiftArray(ec, 1);
@@ -74,16 +48,19 @@ int main(int r, char **argv) {
         printf("results[%d]: %d\n",i,(results[i]) );
         i++;
     }
-    /*
-    i =0;
-    while(i <= 26) {
-        printf("results[%d]: %d\n",i,results[i] );
-        i++;
+
+    int shiftValue = 0;
+    int resultValue = 0;
+    for(i = 0;i < 26; i++) {
+        if(results[i] > resultValue){
+            resultValue = results[i];
+            shiftValue = i+1;
+        }
     }
-*/
-    shiftString(ef2, 21);
-    printf("lololollololol%s",ef2);
-    printf("WE MADE IT!");
+
+    printf("Here is the return value!: %d", shiftValue);
+    shiftString(ef2, shiftValue);
+    printf("%s",ef2);
     return 0;
 }
 
