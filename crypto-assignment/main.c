@@ -102,7 +102,7 @@ int compareArray(string a[], string b[]) {
     int i = 0,count = 0, z = 0;
     while(i < 50) {
         while((b[z]) != NULL) {
-            if(*(a[i]) != *(b[z])) {
+            if((strcasecmp(*a[i], *b[z])==0) {
                 //count++;  
                 //printf("A[%d] = %s  B[%d] = %s\n", i, a[i], z,b[z]);
                 //printf("count++");
