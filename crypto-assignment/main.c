@@ -3,6 +3,8 @@
 #include<string.h>
 #include<stdlib.h>
 
+typedef char * string;
+
 char **chop(char* , char c);
 int checkInDict(char*, char**);
 int get_num_lines(char*, char c);
@@ -13,8 +15,9 @@ int wordInDic(char[], char*[]);
 int file_len(char*);
 int array_len(char **);
 void shiftArray(char **, int );
+int compareArray(string[], string[]);
 
-main(int r, char **argv) {
+int main(int r, char **argv) {
     char *ef, *ef2;
     char *dic;
     //READFILE
@@ -30,27 +33,27 @@ main(int r, char **argv) {
         printf("READ-FAILED");
         return 1;
     }
-   
+
     //CHOP & LEN DECLARATIONS
     char **ec = chop(ef, ' ');
     char **dicChop = chop(dic, '\n');
     int dicLen = array_len(dicChop);
     int ecLen = array_len(ec);
 
-    /*
+    shiftArray(ec, 21);
     int i;
     for(i = 0; i < ecLen; i++){
-        printf("Printing file %s\n", ec[i]); 
+        printf("Printing file %s\n", ec[i]);
     }
-*//*
-    shiftArray(dicChop, 1);
-    int z;
-    for(z = 0; z < dicLen; z++) {
-        printf("Printing file %s\n", dicChop[z]);
-    }*/
+
+    //shiftArray(dicChop, 3);
+    // int z;
+    //for(z = 0; z < dicLen; z++) {
+      //  printf("Printing file %s\n", dicChop[z]);
+    //}
         /*
     int i = 0, z = 0, count;
-    char results[27];    
+    char results[27];
 
     for(i = 0; i < ecLen; i++) {
 
@@ -62,14 +65,14 @@ main(int r, char **argv) {
     int rap = compareArray(a, b);
     printf("rap IS = %d ", rap);
     */
-    
-    int i = 0;
+
+     i = 0;
     int results[27];
     while(i <= 26) {
         shiftArray(ec, 1);
-        results[i] = compareArray(ec, dicChop); 
+        results[i] = compareArray(ec, dicChop);
         printf("results[%d]: %d\n",i,(results[i]) );
-        i++; 
+        i++;
     }
     /*
     i =0;
@@ -78,45 +81,42 @@ main(int r, char **argv) {
         i++;
     }
 */
-    shiftString(ef2, 26);
-    //printf("lololollololol%s",ef2);
+    shiftString(ef2, 21);
+    printf("lololollololol%s",ef2);
     printf("WE MADE IT!");
     return 0;
 }
 
 //FUNCTIONS~
 
-// Function which passes a char c, and shift value k. 
+// Function which passes a char c, and shift value k.
 // Returns the char which is shifted by k characters.
-void shiftArray(char **a, int shift) {
+void shiftArray(string a[], int shift) {
     int i = 0;
-    while(*a[i] != '\0') {
+    while (a[i] != NULL) {
         shiftString(a[i], shift);
         i++;
     }
 }
 
-typedef char * string;
 
-int compareArray(string a[], string b[]) {
-    int i = 0,count = 0, z = 0;
-    while(i < 50) {
-        while((b[z]) != NULL) {
-            if((strcasecmp(*a[i], *b[z])==0) {
-                //count++;  
-                //printf("A[%d] = %s  B[%d] = %s\n", i, a[i], z,b[z]);
-                //printf("count++");
-            }else{
-               count++; 
+int compareArray(string words[], string dictWords[]) {
+    int i, j, matches = 0;
+    string word, dictWord;
+    for (i = 0; i < 500; i++) {
+        // Check if each word is in the dict
+        word = words[i];
+        for (j = 0; dictWords[j] != NULL; j++) {
+            dictWord = dictWords[j];
+            // If they're equivalent, increment the count
+            if ((strlen((char*)word)!= 0)&&(strcasecmp((char *) word, (char *) dictWord) == 0)) {
+                //printf("%s MATCHES %s\n", word, dictWord);
+                matches++;
+                break;
             }
-            z++;
         }
-        //printf("A[%d] = %s  B[%d] = %s\n", i, a[i], z,b[z]);
-        i++;
-        z=0;
     }
-    return count;
-
+    return matches;
 }
 
 int array_len(char **a) {
@@ -129,17 +129,17 @@ int array_len(char **a) {
     return sum;
 }
 
-char **chop(char *s , char c) {
+string *chop(string s, char c) {
     char **lines;
     int i, j;
     int num_lines;
     int len;
 
     /* figure out how many lines there are in s */
-    num_lines=get_num_lines(s ,c);
+    num_lines = get_num_lines(s, c);
+    printf("There were %d lines\n", num_lines);
 
-    if ((lines=malloc((num_lines+2)*sizeof(char*)))==NULL)
-        return NULL;
+    if ((lines = malloc((num_lines + 2) * sizeof(string))) == NULL) return NULL;
 
     len=strlen(s);
     lines[0]=s;
@@ -163,7 +163,7 @@ int checkInDict(char *s, char **dict){
     if(y==0){
         return 1;
     }
-    else{ 
+    else{
         return 0;
     }
 }
@@ -224,37 +224,34 @@ char *readFile(char *filename){
 
 char shift(char c, int shift) {
     int upper = isupper(c);
-    c = tolower(c);   
+    c = tolower(c);
     unsigned char newChar = c + shift;
     while( newChar > 122) {
         newChar = 97 + (newChar - 123);
-    }  
+    }
     if(upper)
         newChar -= 32;
     return newChar;
 }
 
-void shiftString(char s[], int shiftNum) {
-    char *p = s;
-    int alpha = isalpha(*p);
-    while(*p != '\0') {
-        alpha = isalpha(*p);
-        if(alpha){
-            *p = shift(*p, shiftNum);
+void shiftString(string s, int shiftNum) {
+    int i = 0;
+    while(s[i] != 0) {
+        if (isalpha(s[i])) {
+            s[i] = shift(s[i], shiftNum);
         }
-        p++;
+        i++;
     }
-    p = s;
-}  
+}
 
 int wordInDic(char s[], char *dict[]) {
     int i = 0;
     while( dict[i] != '\0') {
         if(strcasecmp(s,dict[i]) == 0) {
-            return 1;    
+            return 1;
         }
         i++;
-    } 
+    }
     return 0;
 }
 
