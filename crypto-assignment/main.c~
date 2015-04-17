@@ -65,7 +65,7 @@ main(int r, char **argv) {
     
     int i = 0;
     int results[27];
-    while(i <= 26) {
+    while(i <= 1) {
         shiftArray(ec, 1);
         results[i] = compareArray(ec, dicChop); 
         printf("results[%d]: %d\n",i,(results[i]) );
@@ -102,12 +102,12 @@ int compareArray(string a[], string b[]) {
     int i = 0,count = 0, z = 0;
     while(i < 50) {
         while((b[z]) != NULL) {
-            if((strcasecmp(*a[i], *b[z])==0) {
-                //count++;  
+            if((strcasecmp((char*)a[i], (char*)b[z]))==0) {
+                count++;  
                 //printf("A[%d] = %s  B[%d] = %s\n", i, a[i], z,b[z]);
                 //printf("count++");
             }else{
-               count++; 
+               //count++; 
             }
             z++;
         }
