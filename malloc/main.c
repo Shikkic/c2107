@@ -1,10 +1,11 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+#include<errno.h>
 int FirstTime = 1;
 char *heapAddress = NULL;
 char *heapEndAddress = NULL;
-int heapsize = 100;
+int heapsize = 104;
 
 typedef struct header {
     unsigned int length :29;
@@ -22,7 +23,9 @@ HEADER *head(HEADER*);
 void headerINFO(HEADER*);
 int roundUp(size_t);
 void *nextHeader(HEADER*);
-
+void *my_free(void*);
+void *previousFooter(HEADER*);
+void *nextFooter(HEADER*);
 /*
 //////////////////////////
 //         MAIN         //
@@ -30,26 +33,34 @@ void *nextHeader(HEADER*);
 */
 
 main() {    
-    //my_malloc(8);
+    
     printf("Here is the heap address %x\n", heapAddress); 
     printf("Here is the int in the address %x\n", &heapAddress);
     int i =0;
-    HEADER *p = my_malloc(8);
-    HEADER *c = my_malloc(9);
-    HEADER *d = my_malloc(17);
-    while ( i < (heapsize/4)+4) {
-        printf("Heap[%d] = %u\n", i, p -> length);
-        p++; 
+    HEADER *p = my_malloc(16);
+    if(p != NULL)
+        p -> length = 9999;
+    HEADER *c = my_malloc(16);
+    if(c != NULL)
+        c -> length = 9999;
+    HEADER *f = my_malloc(16);
+    f -> length = 9999;
+    /*HEADER *g = my_malloc(4);
+    g -> length = 9999;
+    */
+
+    //my_free(p);
+    my_free(c);
+    my_free(f);
+    //HEADER *d = my_malloc(17);
+    //d -> length = 9999;
+    HEADER *pointer = (HEADER*)heapAddress;
+    while ( i < (heapsize/4)) {
+        printf("Heap[%d] = %u, allocated = %u\n", i, pointer -> length, pointer -> allocated);
+        pointer++; 
         i++;
     }
      
-    printf("Round up of 9 is = %d",roundUp(8)); 
-
-    /*HEADER *h;
-    h = (int)heapAddress;
-    printf("This should print H.allocated = %u", h -> allocated);
-   */ 
-    //headerINFO(p);
 }
 
 /*
@@ -73,6 +84,7 @@ void *my_malloc(size_t size) {
         freeHeader -> allocated = 0;
         
         //Declaring first free footer
+ 
         heap = ((heap)+(heapsize) - 4);
         HEADER *freeFooter; 
         freeFooter = (HEADER*)(heap);
@@ -85,18 +97,30 @@ void *my_malloc(size_t size) {
     HEADER *tempHolder2;
     HEADER *newHeader;
     HEADER *newFooter;
+    HEADER *returnAddress;
     unsigned int freeHeaderLen;
     unsigned int newBlockSize = roundUp(size)+8;
     int i = 0;
     //WHILE NOT THE END OF THE ARRAY
     //Traverse every header until we find free header
     printf("GOING THROUGH\n");
+    int traversal = 0;
     int found = 0;
-    while(i < 3 | !found) {
+    while(traversal < heapsize && !found) {
         //IF HP != END MEMORY ADDRESS 
-
-        //Check if allocated
-        if(isFree(hp)&&((hp -> length >= newBlockSize))){
+        printf("TRAVERSAL = %d", traversal);
+        //Check if hp -> length == newBlockSize
+        if(isFree(hp)&&(hp -> length) == newBlockSize) {
+            //TODO take the header and change it to allocated
+            hp -> allocated = 1;
+            returnAddress = hp + 1;
+            //TODO take the footer and change it to allocated
+            hp = hp +(((hp -> length)-4)/4);
+            hp -> allocated = 1;
+            //TODO save found = 1;
+            found = 1;
+        }//Check if allocated
+        else if(isFree(hp)&&((hp -> length >= newBlockSize))){
             printf("HP IS FREE\n");
             //TODO move free header down
             unsigned int oldBlockSize = (hp -> length);
@@ -114,13 +138,17 @@ void *my_malloc(size_t size) {
             tempHolder2 -> allocated = 0;
             //TODO save new spot header
             newHeader = hp; 
+            returnAddress = hp + 1;
             newHeader -> length = newBlockSize;
             newHeader -> allocated = 1;
             //TODO save new spot footer
             newFooter = hp + (((newBlockSize)/4)-1);
             newFooter -> length = newBlockSize;
             newFooter -> allocated = 1;
-            found = 1;  
+            //TODO Save found 
+            found = 1;
+            //TODO Return proper memory address;
+
         }else{
             //GO to next header
             printf("SKIPPED\n");
@@ -129,15 +157,62 @@ void *my_malloc(size_t size) {
             printf ("next header is = %u\n", hp -> length);
            
         }   
-    i++;
-    }        
-    
-    heap = heapAddress;
-    return heap;
+    //traversal += (hp -> length);
+    traversal++;
+    }
+    if(!found){
+        errno = ENOMEM;
+        return NULL;
+    }    
+    return returnAddress;
     
 }
 
-//TODO Not tested yet
+void *my_free(void *p) {
+    
+    HEADER *hp = (HEADER*)p;
+    hp = (hp - 1); 
+    HEADER *currentHeader = hp;
+    //TODO CHECK IF PREVIOUS HEADER EXISTS AND IS FREE
+    //hp = previousHeader(hp);
+    if(isFree(previousFooter(hp))){
+        printf("PREVIOuS FOOTER IS FREE\n");
+        //TODO UPDATE NEW HEADER
+        hp = previousFooter(hp);
+        hp = hp -(((hp ->length)/4)-1);
+        printf("hp's length = %u", currentHeader -> length);
+        unsigned int NL= (hp -> length) + (currentHeader -> length);
+        hp -> length = NL; 
+        //TODO UPDATE NEW FOOTER
+        hp = currentHeader;
+        hp = hp + (((hp -> length)/4)-1);
+        hp -> length = NL;
+    }    
+    //TODO CHECK IF NEXT FOOTER EXISTS AND FREE CHANGE LENGTH TO INCLUDE BOTH
+    /*if(isFree(nextFooter(hp))) {
+        printf("NEXT FOOTER IS FREE");
+        hp = nextFooter(hp);
+        
+        hp -> length = 66; 
+
+
+    } */ 
+        //TODO CHANGE PREVIOUS HEADER LENGTH TO += freed header 
+        
+    //TODO CHCK IF NEXT HEADER IS FREE
+        //TODO IF FREE CHANGE LENGTH TO INCLUDE BOTH
+    //TODO change footer allocated to 0
+    hp = currentHeader;
+    hp -> allocated = 0;
+
+    //TODO 
+
+    //TODO change footer allocaed to 0
+    hp = hp + (((hp -> length)-1)/4);
+    hp -> allocated = 0;
+}
+
+//TODO TESTED!
 int isFree(HEADER *hp) {
     if(hp -> allocated) {
         return 0;
@@ -153,9 +228,21 @@ int isEnd(HEADER *hp) {
     return 0;
 }
 
+void *nextFooter(HEADER *hp) {
+    hp = hp +(((hp -> length)/4) +1);
+    hp = hp +(((hp -> length)/4) +1);
+    return hp;
+}
+
 //TODO Not tested yet
+void *previousFooter(HEADER *hp) {
+    hp = hp - 1;
+    return hp;
+}
+
+//TODO TESTED!
 void *nextHeader(HEADER *hp){
-    hp = hp + ((hp -> length)/4);
+    hp = hp + (((hp -> length))/4);
     return hp;
 }
 
