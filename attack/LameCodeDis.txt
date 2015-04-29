@@ -1,0 +1,27 @@
+f assembler code for function main:
+   0x08048e44 <+0>:     push   %ebp
+   0x08048e45 <+1>:     mov    %esp,%ebp
+   0x08048e47 <+3>:     and    $0xfffffff0,%esp
+   0x08048e4a <+6>:     sub    $0x20,%esp
+   0x08048e4d <+9>:     movl   $0x13,(%esp)
+   0x08048e54 <+16>:    call   0x8048eea <get_random_choice>
+   0x08048e59 <+21>:    mov    %eax,0x1c(%esp)
+   0x08048e5d <+25>:    call   0x8048f93 <print_welcome>
+   0x08048e62 <+30>:    call   0x8048f61 <be_superficially_friendly>
+   0x08048e67 <+35>:    mov    0x1c(%esp),%eax
+   0x08048e6b <+39>:    shl    $0x3,%eax
+   0x08048e6e <+42>:    add    $0x80eb080,%eax
+   0x08048e73 <+47>:    mov    %eax,(%esp)
+   0x08048e76 <+50>:    call   0x8048e99 <play_game>
+   0x08048e7b <+55>:    test   %eax,%eax
+   0x08048e7d <+57>:    je     0x8048e86 <main+66>
+   0x08048e7f <+59>:    call   0x8048f17 <winner>
+   0x08048e84 <+64>:    jmp    0x8048e92 <main+78>
+   0x08048e86 <+66>:    mov    0x1c(%esp),%eax
+   0x08048e8a <+70>:    mov    %eax,(%esp)
+   0x08048e8d <+73>:    call   0x8048f35 <loser>
+   0x08048e92 <+78>:    mov    $0x0,%eax
+   0x08048e97 <+83>:    leave
+   0x08048e98 <+84>:    ret
+End of assembler dump.
+

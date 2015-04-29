@@ -1,0 +1,25 @@
+
+f assembler code for function be_superficially_friendly:
+   0x08048f61 <+0>:     push   %ebp
+   0x08048f62 <+1>:     mov    %esp,%ebp
+   0x08048f64 <+3>:     sub    $0x48,%esp
+   0x08048f67 <+6>:     movl   $0x80bedbc,(%esp)
+   0x08048f6e <+13>:    call   0x804f7e0 <printf>
+   0x08048f73 <+18>:    lea    -0x30(%ebp),%eax
+   0x08048f76 <+21>:    mov    %eax,(%esp)
+   0x08048f79 <+24>:    call   0x804fd40 <gets>
+   0x08048f7e <+29>:    lea    -0x30(%ebp),%eax
+   0x08048f81 <+32>:    mov    %eax,0x4(%esp)
+   0x08048f85 <+36>:    movl   $0x80bedd0,(%esp)
+   0x08048f8c <+43>:    call   0x804f7e0 <printf>
+   0x08048f91 <+48>:    leave
+   0x08048f92 <+49>:    ret
+End of assembler dump.
+
+
+0xffffda38:     0xffffda68      0x08048e67      0x00000013      0xffffdaf4
+                                                                                        │0xffffda48:     0xffffdafc      0x00000002      0x080eb124      0xffffdaf4
+                                                                                         │0xffffda58:     0xffffdafc      0x0000000b      0x00000000      0x080eb00c
+                                                                                         │0xffffda68:     0x08049750      0x0804919a      0x00000001      0xffffdaf4
+                                                                                         │0xffffda78:     0xffffdafc      0x00000000      0x00000000      0x080481b0
+
